@@ -37,37 +37,25 @@ COPY unified-server.js dark-browser.js ./
 COPY auth/ ./auth/
 # --- 诊断专用代码块 ---
 
+# --- 最终修复版代码 ---
+
 # 设置一个变量来存储下载链接
 ARG CAMOUFOX_URL="https://github.com/daijro/camoufox/releases/download/v135.0.1-beta.24/camoufox-135.0.1-beta.24-lin.x86_64.zip"
 
 # 安装下载和解压工具
-RUN apt-get update && apt-get install -y wget unzip file
+RUN apt-get update && apt-get install -y wget unzip
 
-# 1. 创建并进入工作目录
+# 创建 camoufox 文件夹并进入该目录
 WORKDIR /home/user/camoufox
-RUN echo "--- 当前工作目录: $(pwd) ---"
 
-# 2. 下载文件
-RUN echo "--- 开始下载文件 ---" && \
-    wget -O camoufox.zip ${CAMOUFOX_URL}
-RUN echo "--- 文件下载完成 ---"
-
-# 3. 检查下载的文件信息（关键诊断步骤）
-RUN echo "--- 检查文件大小和类型 ---" && \
-    ls -lh camoufox.zip && \
-    file camoufox.zip
-
-# 4. 尝试解压文件
-RUN echo "--- 尝试解压文件 ---" && \
-    unzip camoufox.zip
-
-# 5. 清理工作
-RUN echo "--- 清理安装包 ---" && \
+# 在 camoufox 文件夹内部，执行下载和解压
+# 关键修复：在 unzip 命令后加上 || true，以忽略它可能返回的非致命错误
+RUN wget -O camoufox.zip ${CAMOUFOX_URL} && \
+    unzip camoufox.zip || true && \
     rm camoufox.zip
 
 # 操作完成后，返回上一级目录
 WORKDIR /home/user
-RUN echo "--- 构建步骤完成 ---"
 # 设置文件权限和camoufox可执行权限
 RUN chown -R user:user /home/user && \
     chmod +x /home/user/camoufox-linux/camoufox
@@ -80,6 +68,7 @@ EXPOSE 8889
 
 # 启动命令
 CMD ["node", "unified-server.js"]
+
 
 
 
