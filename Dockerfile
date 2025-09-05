@@ -41,11 +41,16 @@ ARG CAMOUFOX_URL="https://github.com/daijro/camoufox/releases/download/v135.0.1-
 # 安装下载和解压工具
 RUN apt-get update && apt-get install -y wget unzip
 
-# 创建一个目标文件夹，下载并解压文件到这个文件夹里，最后删除安装包
-RUN mkdir camoufox && \
-    wget -O camoufox.zip ${CAMOUFOX_URL} && \
-    unzip camoufox.zip -d camoufox && \
+# 创建 camoufox 文件夹并进入该目录
+WORKDIR /home/user/camoufox
+
+# 在 camoufox 文件夹内部，执行下载和解压
+RUN wget -O camoufox.zip ${CAMOUFOX_URL} && \
+    unzip camoufox.zip && \
     rm camoufox.zip
+
+# 操作完成后，返回上一级目录，以防影响后续指令
+WORKDIR /home/user
 
 # 设置文件权限和camoufox可执行权限
 RUN chown -R user:user /home/user && \
@@ -59,5 +64,6 @@ EXPOSE 8889
 
 # 启动命令
 CMD ["node", "unified-server.js"]
+
 
 
