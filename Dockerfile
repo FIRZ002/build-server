@@ -35,7 +35,18 @@ RUN npm install
 # 复制应用文件
 COPY unified-server.js dark-browser.js ./
 COPY auth/ ./auth/
-COPY camoufox-linux/ ./camoufox-linux/
+# 设置一个变量来存储下载链接
+ARG CAMOUFOX_URL="https://github.com/daijro/camoufox/releases/download/v135.0.1-beta.24/camoufox-135.0.1-beta.24-lin.x86_64.zip"
+
+# 安装下载和解压工具
+RUN apt-get update && apt-get install -y wget unzip
+
+# 下载、解压浏览器，重命名，然后删除安装包
+RUN wget -O camoufox.zip ${CAMOUFOX_URL} && \
+    unzip camoufox.zip && \
+    # 这一行是新增的：把解压出来的文件夹（不管它叫什么名字）重命名为 camoufox
+    mv camoufox-* camoufox && \
+    rm camoufox.zip
 
 # 设置文件权限和camoufox可执行权限
 RUN chown -R user:user /home/user && \
@@ -49,3 +60,4 @@ EXPOSE 8889
 
 # 启动命令
 CMD ["node", "unified-server.js"]
+
