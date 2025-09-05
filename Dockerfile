@@ -58,7 +58,7 @@ RUN wget -O camoufox.zip ${CAMOUFOX_URL} && \
 WORKDIR /home/user
 # 设置文件权限和camoufox可执行权限
 RUN chown -R user:user /home/user && \
-    chmod +x /home/user/camoufox-linux/camoufox
+    chmod +x /home/user/camoufox/camoufox
 
 # 切换到user用户
 USER user
@@ -68,6 +68,7 @@ EXPOSE 8889
 
 # 启动命令
 CMD ["node", "unified-server.js"]
+
 
 
 
