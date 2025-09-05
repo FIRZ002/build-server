@@ -34,7 +34,7 @@ RUN npm install
 
 # 复制应用文件
 COPY unified-server.js dark-browser.js ./
-COPY auth/ ./auth/
+# RUN touch /home/user/auth
 # --- 诊断专用代码块 ---
 
 # --- 最终修复版代码 ---
@@ -68,6 +68,7 @@ EXPOSE 8889
 
 # 启动命令
 CMD ["node", "unified-server.js"]
+
 
 
 
